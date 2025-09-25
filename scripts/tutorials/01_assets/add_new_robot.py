@@ -17,12 +17,20 @@ AppLauncher.add_app_launcher_args(parser)
 # parse the arguments
 args_cli = parser.parse_args()
 
+# ensure safe device selection before launching the app
+import torch
+_requested_device = str(getattr(args_cli, "device", "cuda:0"))
+_cuda_unavailable = (not torch.cuda.is_available()) or (getattr(torch.version, "cuda", None) is None)
+if _requested_device.startswith("cuda") and _cuda_unavailable:
+    args_cli.device = "cpu"
+    print("[INFO]: CUDA가 비활성화 또는 미지원 빌드이므로 CPU로 폴백합니다.")
+print(f"[INFO]: Using compute device: {args_cli.device}")
+
 # launch omniverse app
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 import numpy as np
-import torch
 
 import isaaclab.sim as sim_utils
 from isaaclab.actuators import ImplicitActuatorCfg

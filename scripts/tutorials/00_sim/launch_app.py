@@ -17,6 +17,7 @@ This script demonstrates how to run IsaacSim via the AppLauncher
 
 
 import argparse
+import contextlib
 
 from isaaclab.app import AppLauncher
 
@@ -35,6 +36,15 @@ parser.add_argument(
 AppLauncher.add_app_launcher_args(parser)
 # parse the arguments
 args_cli = parser.parse_args()
+
+# resolve device fallback before launching the app
+with contextlib.suppress(Exception):
+    import torch  # type: ignore
+    desired_device = getattr(args_cli, "device", "cuda:0")
+    if isinstance(desired_device, str) and desired_device.startswith("cuda") and not torch.cuda.is_available():
+        print("[INFO]: CUDA가 비활성화되어 있어 장치를 'cpu'로 폴백합니다.")
+        args_cli.device = "cpu"
+
 # launch omniverse app
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app

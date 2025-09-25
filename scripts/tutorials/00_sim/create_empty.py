@@ -18,6 +18,7 @@
 import argparse
 
 from isaaclab.app import AppLauncher
+import torch
 
 # create argparser
 parser = argparse.ArgumentParser(description="Tutorial on creating an empty stage.")
@@ -38,7 +39,8 @@ def main():
     """Main function."""
 
     # Initialize the simulation context
-    sim_cfg = SimulationCfg(dt=0.01)
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    sim_cfg = SimulationCfg(dt=0.01, device=device)
     sim = SimulationContext(sim_cfg)
     # Set main camera
     sim.set_camera_view([2.5, 2.5, 2.5], [0.0, 0.0, 0.0])
