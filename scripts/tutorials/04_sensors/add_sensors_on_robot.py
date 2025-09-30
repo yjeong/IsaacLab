@@ -32,6 +32,8 @@ parser.add_argument("--num_envs", type=int, default=2, help="Number of environme
 AppLauncher.add_app_launcher_args(parser)
 # parse the arguments
 args_cli = parser.parse_args()
+# Force enable cameras since this tutorial requires camera sensor
+args_cli.enable_cameras = True
 
 # launch omniverse app
 app_launcher = AppLauncher(args_cli)
